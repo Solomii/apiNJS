@@ -7,8 +7,12 @@ const PORT = process.env.PORT || 3000;
 const server = http.createServer(
   (request, response) => {
     const urlParse = url.parse(request.url, true);
-
-    if (urlParse.pathname === '/api/users' && request.method === "GET") {
+    let token = request.headers.authorization;
+   
+    if (token !== "Bearer 12345") {
+      response.statusCode = 401;
+      response.end('Missing Authorization Header')
+    }  else if (urlParse.pathname === '/api/users' && request.method === "GET") {
       response.writeHead(200, { 'Content-Type': 'application/json' });
       response.end(readJsonFile());
     }
@@ -43,7 +47,7 @@ const server = http.createServer(
       response.writeHead(404, { 'Content-Type': 'application/json' });
       response.end(JSON.stringify(message, null, 2));
     }
-
+   
   });
 
 server.listen( PORT, () => {
